@@ -32,6 +32,7 @@ jobs:
           --sdist
           --wheel
           --outdir dist/
+          --verbose
           .
       - name: Publish package distributions to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
