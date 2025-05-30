@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+{% load markdown_extras %}
+
+{% block title %}Candidates for {{ job_posting.title }}{% endblock %}
+
+{% block content %}
+<h1>Candidates for: {{ job_posting.title }}</h1>
+<hr>
+<p>
+    <strong>Order by:</strong>
+    <a href="?order_by=-ai_score"{% if current_order_by == '-ai_score' %} style="font-weight:bold;"{% endif %}>AI Score (High to Low)</a> |
+    <a href="?order_by=ai_score"{% if current_order_by == 'ai_score' %} style="font-weight:bold;"{% endif %}>AI Score (Low to High)</a> |
+    <a href="?order_by=-application_date"{% if current_order_by == '-application_date' %} style="font-weight:bold;"{% endif %}>Application Date (Newest First)</a> |
+    <a href="?order_by=application_date"{% if current_order_by == 'application_date' %} style="font-weight:bold;"{% endif %}>Application Date (Oldest First)</a>
+</p>
+<hr>
+
+<style>
+    #candidate-admin-container { display: flex; flex-wrap: wrap; } /* Added flex-wrap for responsiveness */
+    #candidate-list-pane { flex: 1; min-width: 300px; padding-right: 20px; margin-bottom: 20px;} /* Added min-width and margin-bottom */
+    #resume-display-pane { flex: 2; min-width: 400px; border-left: 1px solid #ccc; padding-left: 20px; background-color: #f9f9f9; } /* Added min-width */
+    .candidate-item { margin-bottom: 15px; padding: 10px; border: 1px solid #eee; border-radius: 5px; }
+    .candidate-item h4 { margin-top: 0; }
+    .hidden-resume-html { display: none; }
+    .tag { background-color: #f0f0f0; padding: 2px 5px; border-radius: 3px; font-size: 0.9em; }
+    .pagination { margin-top: 20px; }
+    #resume-content-area pre { white-space: pre-wrap; word-wrap: break-word; font-size: 0.9em; }
+    #resume-content-area img { max-width: 100%; height: auto; } /* Basic responsive images */
+</style>
+
+<div id="candidate-admin-container">
+    <div id="candidate-list-pane">
+        <h2>Applicants ({{ applications.count }})</h2>
+        {% if applications %}
+            {% for app in applications %}
+                <div class="candidate-item" id="candidate-{{ app.user.applicant.pk }}">
+                    <h4>{{ app.user.applicant.full_name|default:"N/A" }}</h4>
+                    <p><strong>AI Score:</strong> {{ app.ai_score|floatformat:2|default:"N/A" }}</p>
+                    <p><strong>Applied on:</strong> {{ app.application_date|date:"Y-m-d H:i" }}</p>
+                    <p><strong>Tags:</strong> 
+                        {% for tag in app.user.applicant.tags.all %}
+                            <span class="tag">{{ tag.name }}</span>{% if not forloop.last %}, {% endif %}
+                        {% empty %}
+                            No tags
+                        {% endfor %}
+                    </p>
+                    <p><strong>Email:</strong> {{ app.user.email }}</p> {# Added email #}
+                    <p><strong>Phone:</strong> {{ app.user.applicant.phone_number|default:"N/A" }}</p> {# Added phone #}
+                    <p><strong>Current Title:</strong> {{ app.user.applicant.current_title|default:"N/A" }}</p> {# Added current title #}
+                    <p><strong>Organization:</strong> {{ app.user.applicant.latest_work_organization|default:"N/A" }}</p>
+                    <p><strong>Degree:</strong> {{ app.user.applicant.latest_degree|default:"N/A" }} at {{ app.user.applicant.school|default:"N/A" }}</p>
+                    <p><strong>LinkedIn:</strong> 
+                        {% if app.user.applicant.linkedin_profile %}
+                            <a href="{{ app.user.applicant.linkedin_profile }}" target="_blank" rel="noopener noreferrer">View Profile</a>
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </p>
+                    <p><a href="{% url 'careers:download_resume' applicant_id=app.user.applicant.pk %}">Download Resume PDF</a></p>
+                    <button class="view-resume-btn" data-applicant-id="{{ app.user.applicant.pk }}">View Resume</button>
+                    
+                    <div class="hidden-resume-html" id="resume-html-{{ app.user.applicant.pk }}">
+                        {% if app.user.applicant.resume_markdown %}
+                            {{ app.user.applicant.resume_markdown|markdown_to_html }}
+                        {% else %}
+                            <p>No resume content available in Markdown format.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+
+            {% if is_paginated %}
+            <div class="pagination">
+                <span class="step-links">
+                    {% if page_obj.has_previous %}
+                        <a href="?page=1{% if current_order_by %}&order_by={{ current_order_by }}{% endif %}">&laquo; first</a>
+                        <a href="?page={{ page_obj.previous_page_number }}{% if current_order_by %}&order_by={{ current_order_by }}{% endif %}">previous</a>
+                    {% endif %}
+                    <span class="current">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.</span>
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}{% if current_order_by %}&order_by={{ current_order_by }}{% endif %}">next</a>
+                        <a href="?page={{ page_obj.paginator.num_pages }}{% if current_order_by %}&order_by={{ current_order_by }}{% endif %}">last &raquo;</a>
+                    {% endif %}
+                </span>
+            </div>
+            {% endif %}
+        {% else %}
+            <p>No candidates found for this job posting.</p>
+        {% endif %}
+    </div>
+    <div id="resume-display-pane">
+        <h2>Resume Content</h2>
+        <div id="resume-content-area">
+            <p>Select a candidate's "View Resume" button to see their resume here.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const resumeContentArea = document.getElementById('resume-content-area');
+    const viewButtons = document.querySelectorAll('.view-resume-btn');
+    const candidateItems = document.querySelectorAll('.candidate-item'); // For highlighting
+
+    viewButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const applicantId = this.dataset.applicantId;
+            const htmlSourceDiv = document.getElementById('resume-html-' + applicantId);
+            
+            if (htmlSourceDiv) {
+                resumeContentArea.innerHTML = htmlSourceDiv.innerHTML;
+                
+                // Highlight selected candidate
+                candidateItems.forEach(item => item.style.backgroundColor = 'transparent');
+                document.getElementById('candidate-' + applicantId).style.backgroundColor = '#eef'; // Light blue highlight
+            } else {
+                resumeContentArea.innerHTML = '<p>Could not find resume content for this applicant.</p>';
+            }
+            // Make the resume display pane visible if it was hidden
+            // document.getElementById('resume-display-pane').style.display = 'block'; // Not strictly needed if always visible
+        });
+    });
+});
+</script>
+{% endblock %}

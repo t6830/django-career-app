@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load markdown_extras %}
+
+{% block title %}{{ job_posting.title }} - Career Portal{% endblock %}
+
+{% block content %}
+    <h1>{{ job_posting.title }}</h1>
+    <p><strong>Location:</strong> {{ job_posting.location }}</p>
+    {% if job_posting.department %}
+        <p><strong>Department:</strong> {{ job_posting.department }}</p>
+    {% endif %}
+    
+    <h2>Job Description</h2>
+    <p>{{ job_posting.description|markdown_to_html|safe }}</p>
+
+    <hr>
+
+    <h2>Apply for this Position</h2>
+    <form method="POST" enctype="multipart/form-data" id="applicationForm">
+        {% csrf_token %}
+        {{ form.resume_pdf.label_tag }}
+        {{ form.resume_pdf }}
+        {% if form.resume_pdf.help_text %}
+            <p class="help-text">{{ form.resume_pdf.help_text }}</p>
+        {% endif %}
+        {{ form.resume_pdf.errors }}
+        <button type="submit">Apply</button>
+    </form>
+
+    <div id="loading-message" style="display:none; padding: 10px; margin-top:15px; border: 1px solid #ddd; background-color: #f9f9f9;">
+        Processing your application, please wait...
+    </div>
+
+    <hr>
+    <p><a href="{% url 'careers:career_home' %}">Back to Career Home</a></p>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('applicationForm'); // Use the ID you gave your form
+        const loadingMessage = document.getElementById('loading-message');
+        const submitButton = form.querySelector('button[type="submit"]'); // Assuming one submit button
+
+        if (form && loadingMessage && submitButton) {
+            form.addEventListener('submit', function() {
+                // Show loading message
+                loadingMessage.style.display = 'block';
+                
+                // Optional: Disable submit button to prevent multiple submissions
+                submitButton.disabled = true;
+                submitButton.textContent = 'Submitting...'; // Optional: change button text
+                
+                // The form will submit naturally. When the server responds and the page reloads 
+                // (either to show errors or redirect), the loading message will be gone 
+                // or hidden again by default.
+            });
+        }
+    });
+</script>
+{% endblock %}

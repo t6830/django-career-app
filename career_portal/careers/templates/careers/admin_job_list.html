@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{# Not loading markdown_extras as it's not strictly needed for job titles/details here #}
+
+{% block title %}Admin - Job Postings{% endblock %}
+
+{% block content %}
+<h1>Admin - Job Postings</h1>
+<hr>
+{% if job_postings %}
+    <ul style="list-style-type: none; padding-left: 0;">
+        {% for job in job_postings %}
+        <li style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #eee;">
+            <h2><a href="{% url 'careers:admin_candidate_list' job_posting_id=job.pk %}">{{ job.title }}</a></h2>
+            <p><strong>Posted on:</strong> {{ job.date_posted|date:"Y-m-d" }}</p>
+            <p><strong>Status:</strong> {% if job.is_active %}Active{% else %}Inactive{% endif %}</p>
+            <p><strong>Department:</strong> {{ job.department|default:"N/A" }}</p>
+            <p><a href="{% url 'careers:admin_candidate_list' job_posting_id=job.pk %}">View Candidates ({{ job.application_set.count }})</a></p>
+        </li>
+        {% endfor %}
+    </ul>
+
+    {% if is_paginated %}
+        <div class="pagination">
+            <span class="step-links">
+                {% if page_obj.has_previous %}
+                    <a href="?page=1">&laquo; first</a>
+                    <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+                {% endif %}
+
+                <span class="current">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                </span>
+
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}">next</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                {% endif %}
+            </span>
+        </div>
+    {% endif %}
+{% else %}
+    <p>No job postings found.</p>
+{% endif %}
+{% endblock %}

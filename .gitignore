@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+*.log
+*.pot
+*.mo
+
+# Django
+*.sqlite3
+db.sqlite3
+media/
+staticfiles/
+
+# Environment/Credentials
+.env
+dummy-credentials.json
+*.pem
+
+# Virtual environments
+venv/
+env/
+.venv/
+ENV/
+*.venv
+.python-version
+
+
+google-credential.json

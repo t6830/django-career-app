@@ -1,0 +1,56 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+backend-path = ["."]
+
+[project]
+name = "career_portal"
+version = "0.1.0"
+description = "A Django project for a career portal."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT License" }
+authors = [
+    { name = "Your Name", email = "you@example.com" },
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Framework :: Django",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+
+dependencies = [    
+    "boto3",
+    "Django",
+    "django-storages",
+    "google-cloud-storage",
+    "json_repair",
+    "litellm",
+    "markdown2",
+    "pdfminer.six",
+    "python-decouple",
+    "python-dotenv",
+    "urllib3",
+]
+
+[project.urls]
+Homepage = "https://github.com/GenesisEX/django-career-app"
+Repository = "https://github.com/GenesisEX/django-career-app"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+exclude = ["tests*"]
+
+[tool.setuptools.package-data]
+"" = ["*.html", "*.css", "*.js", "static/*", "templates/*"]
+
+# Example of how to specify Django settings if needed, adjust as necessary
+# [tool.django-settings]
+# DJANGO_SETTINGS_MODULE = "career_portal.settings"

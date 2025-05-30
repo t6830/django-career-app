@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Log In{% endblock %}
+
+{% block content %}
+  <h2>Log In</h2>
+  {% if form.errors %}
+    <p class="alert alert-danger">Your username and password didn't match. Please try again.</p>
+  {% endif %}
+
+  {% if next %}
+    {% if user.is_authenticated %}
+      <p class="alert alert-warning">Your account doesn't have access to this page. To proceed,
+      please login with an account that has access.</p>
+    {% else %}
+      <p class="alert alert-info">Please login to see this page.</p>
+    {% endif %}
+  {% endif %}
+
+  <form method="post" action="{% url 'careers:login' %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Log In</button>
+    <input type="hidden" name="next" value="{{ next }}">
+  </form>
+
+  {# Add a link to the password reset request page #}
+  <p class="mt-2"><a href="{% url 'careers:password_reset_request' %}">Forgot password?</a></p>
+{% endblock %}

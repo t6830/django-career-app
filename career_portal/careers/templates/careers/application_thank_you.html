@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block title %}Application Submitted - Career Portal{% endblock %}
+
+{% block content %}
+    <h1>Thank You!</h1>
+    <p>Your application has been successfully submitted. We appreciate your interest and will be in touch if your qualifications match our requirements.</p>
+    <p><a href="{% url 'careers:career_home' %}">Back to Career Home</a></p>
+{% endblock %}

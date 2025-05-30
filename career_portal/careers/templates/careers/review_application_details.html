@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Review Your Application - Career Portal{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Review Your Application Details</h2>
+    <p>Please review the information extracted from your resume and the data you provided. Make any necessary corrections before submitting.</p>
+    
+    {% if form.errors %}
+        <div class="alert alert-danger">
+            <strong>Please correct the errors below:</strong>
+            <ul>
+                {% for field, errors in form.errors.items %}
+                    {% for error in errors %}
+                        <li>{{ field|capfirst }}: {{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+                {% if form.non_field_errors %}
+                    {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                {% endif %}
+            </ul>
+        </div>
+    {% endif %}
+
+    <form method="post" action="{% url 'careers:review_application' %}" class="mt-4">
+        {% csrf_token %}
+        {{ form.tags_edit.as_hidden }}
+        
+        <h4>Personal Information</h4>
+        {{ form.full_name.label_tag }}
+        {{ form.full_name }}
+        {% if form.full_name.errors %}<div class="invalid-feedback d-block">{{ form.full_name.errors }}</div>{% endif %}
+        {% if form.full_name.help_text %}<small class="form-text text-muted">{{ form.full_name.help_text }}</small>{% endif %}
+        
+        {{ form.email.label_tag }}
+        {{ form.email }}
+        {% if form.email.errors %}<div class="invalid-feedback d-block">{{ form.email.errors }}</div>{% endif %}
+        {% if form.email.help_text %}<small class="form-text text-muted">{{ form.email.help_text }}</small>{% endif %}
+
+        {{ form.phone_number.label_tag }}
+        {{ form.phone_number }}
+        {% if form.phone_number.errors %}<div class="invalid-feedback d-block">{{ form.phone_number.errors }}</div>{% endif %}
+        {% if form.phone_number.help_text %}<small class="form-text text-muted">{{ form.phone_number.help_text }}</small>{% endif %}
+
+        {{ form.linkedin_profile.label_tag }}
+        {{ form.linkedin_profile }}
+        {% if form.linkedin_profile.errors %}<div class="invalid-feedback d-block">{{ form.linkedin_profile.errors }}</div>{% endif %}
+        {% if form.linkedin_profile.help_text %}<small class="form-text text-muted">{{ form.linkedin_profile.help_text }}</small>{% endif %}
+
+        <h4 class="mt-4">Latest Work Experience</h4>
+        {{ form.current_title.label_tag }}
+        {{ form.current_title }}
+        {% if form.current_title.errors %}<div class="invalid-feedback d-block">{{ form.current_title.errors }}</div>{% endif %}
+
+        {{ form.latest_work_organization.label_tag }}
+        {{ form.latest_work_organization }}
+        {% if form.latest_work_organization.errors %}<div class="invalid-feedback d-block">{{ form.latest_work_organization.errors }}</div>{% endif %}
+
+        <h4 class="mt-4">Latest Education</h4>
+        {{ form.latest_degree.label_tag }}
+        {{ form.latest_degree }}
+        {% if form.latest_degree.errors %}<div class="invalid-feedback d-block">{{ form.latest_degree.errors }}</div>{% endif %}
+        
+        {{ form.school.label_tag }}
+        {{ form.school }}
+        {% if form.school.errors %}<div class="invalid-feedback d-block">{{ form.school.errors }}</div>{% endif %}
+
+        {{ form.major.label_tag }}
+        {{ form.major }}
+        {% if form.major.errors %}<div class="invalid-feedback d-block">{{ form.major.errors }}</div>{% endif %}
+
+        {{ form.graduate_year.label_tag }}
+        {{ form.graduate_year }}
+        {% if form.graduate_year.errors %}<div class="invalid-feedback d-block">{{ form.graduate_year.errors }}</div>{% endif %}
+
+        {% if is_new_user %}
+            <h4 class="mt-4">Create Your Account</h4>
+            <p>An account will be created for you with the email address provided. Please set a password.</p>
+            <div class="form-group">
+                <label for="{{ form.password.id_for_label }}">Create Password:</label>
+                {{ form.password }}
+                {% if form.password.errors %}<div class="invalid-feedback d-block">{{ form.password.errors|join:", " }}</div>{% endif %}
+            </div>
+            <div class="form-group">
+                <label for="{{ form.password_confirmation.id_for_label }}">Confirm Password:</label>
+                {{ form.password_confirmation }}
+                {% if form.password_confirmation.errors %}<div class="invalid-feedback d-block">{{ form.password_confirmation.errors|join:", " }}</div>{% endif %}
+            </div>
+        {% else %}
+            <p class="mt-4">To confirm your identity and submit the application for your existing account (<strong>{{ form.initial.email|default:"your email" }}</strong>), please enter your current password.</p>
+            <div class="form-group">
+                <label for="{{ form.password.id_for_label }}">Current Password (to confirm changes):</label>
+                {{ form.password }}
+                {% if form.password.errors %}<div class="invalid-feedback d-block">{{ form.password.errors|join:", " }}</div>{% endif %}
+                <p class="mt-1"><small><a href="{% url 'careers:password_reset_request' %}">Forgot Password?</a></small></p>
+            </div>
+            {# No password_confirmation field for existing user #}
+        {% endif %}
+        
+        <!-- job_posting_id is handled in session by the POST view -->
+
+        <button type="submit" class="btn btn-primary mt-4">Confirm and Submit Application</button>
+        <a href="{% url 'careers:career_home' %}" class="btn btn-secondary mt-4">Cancel</a>
+    </form>
+</div>
+{% endblock %}

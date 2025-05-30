@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load markdown_extras %}
+
+{% block title %}Careers Home - Career Portal{% endblock %}
+
+{% block content %}
+    <h1>Our Company</h1>
+    {% if company_profile %}
+        <p>{{ company_profile.description|markdown_to_html|safe }}</p>
+    {% else %}
+        <p>Welcome to our careers page!</p>
+    {% endif %}
+
+    <h2>Open Positions</h2>
+    {% if job_postings %}
+        <ul>
+            {% for job in job_postings %}
+                <li class="job-posting">
+                    <h3><a href="{% url 'careers:job_detail' job.pk %}">{{ job.title }}</a></h3>
+                    <p>Location: {{ job.location }}</p>
+                    {% if job.department %}
+                        <p>Department: {{ job.department }}</p>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No open positions at the moment.</p>
+    {% endif %}
+{% endblock %}
