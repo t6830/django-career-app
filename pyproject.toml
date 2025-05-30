@@ -44,11 +44,12 @@ Homepage = "https://github.com/t6830/django-career-app"
 Repository = "https://github.com/t6830/django-career-app"
 
 [tool.setuptools.packages.find]
-where = ["src"]
+where = ["."]
 exclude = ["tests*"]
 
 [tool.setuptools.package-data]
-"" = ["*.html", "*.css", "*.js", "static/*", "templates/*"]
+"*" = ["*.html", "*.css", "*.js", "static/*", "templates/*"]
+
 
 # Example of how to specify Django settings if needed, adjust as necessary
 # [tool.django-settings]
