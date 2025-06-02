@@ -1,0 +1,11 @@
+boto3
+Django
+django-storages
+google-cloud-storage
+json_repair
+litellm
+markdown2
+pdfminer.six
+python-decouple
+python-dotenv
+urllib3
