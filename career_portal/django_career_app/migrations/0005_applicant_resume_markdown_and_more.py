@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('careers', '0004_remove_applicant_submission_date_and_more'),
+        ('django_career_app', '0004_remove_applicant_submission_date_and_more'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
@@ -76,7 +76,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='applicant',
             name='tags',
-            field=models.ManyToManyField(blank=True, help_text='Tags associated with the applicant, like skills or keywords.', to='careers.tag'),
+            field=models.ManyToManyField(blank=True, help_text='Tags associated with the applicant, like skills or keywords.', to='django_career_app.tag'),
         ),
         migrations.AlterField(
             model_name='applicant',
@@ -96,7 +96,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='application',
             name='job_posting',
-            field=models.ForeignKey(help_text='The job posting this application is for.', on_delete=django.db.models.deletion.CASCADE, to='careers.jobposting'),
+            field=models.ForeignKey(help_text='The job posting this application is for.', on_delete=django.db.models.deletion.CASCADE, to='django_career_app.jobposting'),
         ),
         migrations.AlterField(
             model_name='application',
@@ -146,7 +146,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='jobrequirement',
             name='job_posting',
-            field=models.ForeignKey(help_text='The job posting these requirements belong to.', on_delete=django.db.models.deletion.CASCADE, related_name='requirements', to='careers.jobposting'),
+            field=models.ForeignKey(help_text='The job posting these requirements belong to.', on_delete=django.db.models.deletion.CASCADE, related_name='requirements', to='django_career_app.jobposting'),
         ),
         migrations.AlterField(
             model_name='jobrequirement',

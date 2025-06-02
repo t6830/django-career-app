@@ -42,7 +42,7 @@ class Migration(migrations.Migration):
                 ('linkedin_profile', models.URLField(blank=True, null=True)),
                 ('resume_pdf_url', models.URLField()),
                 ('submission_date', models.DateTimeField(auto_now_add=True)),
-                ('job_posting', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='careers.jobposting')),
+                ('job_posting', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='django_career_app.jobposting')),
             ],
         ),
         migrations.CreateModel(
@@ -51,7 +51,7 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=255)),
                 ('weight', models.FloatField()),
-                ('job_posting', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='careers.jobposting')),
+                ('job_posting', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='django_career_app.jobposting')),
             ],
         ),
     ]

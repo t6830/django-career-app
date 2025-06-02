@@ -10,11 +10,11 @@
     <ul style="list-style-type: none; padding-left: 0;">
         {% for job in job_postings %}
         <li style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #eee;">
-            <h2><a href="{% url 'careers:admin_candidate_list' job_posting_id=job.pk %}">{{ job.title }}</a></h2>
+            <h2><a href="{% url 'django_career_app:admin_candidate_list' job_posting_id=job.pk %}">{{ job.title }}</a></h2>
             <p><strong>Posted on:</strong> {{ job.date_posted|date:"Y-m-d" }}</p>
             <p><strong>Status:</strong> {% if job.is_active %}Active{% else %}Inactive{% endif %}</p>
             <p><strong>Department:</strong> {{ job.department|default:"N/A" }}</p>
-            <p><a href="{% url 'careers:admin_candidate_list' job_posting_id=job.pk %}">View Candidates ({{ job.application_set.count }})</a></p>
+            <p><a href="{% url 'django_career_app:admin_candidate_list' job_posting_id=job.pk %}">View Candidates ({{ job.application_set.count }})</a></p>
         </li>
         {% endfor %}
     </ul>

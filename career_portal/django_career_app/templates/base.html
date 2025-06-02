@@ -9,7 +9,7 @@
 </head>
 <body>
     <nav>
-        <a href="{% url 'careers:career_home' %}">Careers Home</a>
+        <a href="{% url 'django_career_app:career_home' %}">Careers Home</a>
         {% if user.is_staff %}
             <a href="{% url 'admin:index' %}">Admin</a>
         {% endif %}

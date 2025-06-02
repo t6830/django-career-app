@@ -16,7 +16,7 @@
     {% endif %}
   {% endif %}
 
-  <form method="post" action="{% url 'careers:login' %}">
+  <form method="post" action="{% url 'django_career_app:login' %}">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit">Log In</button>
@@ -24,5 +24,5 @@
   </form>
 
   {# Add a link to the password reset request page #}
-  <p class="mt-2"><a href="{% url 'careers:password_reset_request' %}">Forgot password?</a></p>
+  <p class="mt-2"><a href="{% url 'django_career_app:password_reset_request' %}">Forgot password?</a></p>
 {% endblock %}

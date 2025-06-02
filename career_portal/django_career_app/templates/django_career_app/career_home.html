@@ -16,7 +16,7 @@
         <ul>
             {% for job in job_postings %}
                 <li class="job-posting">
-                    <h3><a href="{% url 'careers:job_detail' job.pk %}">{{ job.title }}</a></h3>
+                    <h3><a href="{% url 'django_career_app:job_detail' job.pk %}">{{ job.title }}</a></h3>
                     <p>Location: {{ job.location }}</p>
                     {% if job.department %}
                         <p>Department: {{ job.department }}</p>

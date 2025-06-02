@@ -5,7 +5,7 @@ from .views import (
     AdminJobListView, AdminCandidateListView, download_resume # Added Admin views
 )
 
-app_name = 'careers'
+app_name = 'django_career_app'
 
 urlpatterns = [
     path('', CareerHomeView.as_view(), name='career_home'),
@@ -23,7 +23,7 @@ urlpatterns = [
          auth_views.LoginView.as_view(template_name='registration/login.html'), 
          name='login'),
     path('logout/', 
-         auth_views.LogoutView.as_view(next_page=reverse_lazy('careers:career_home')), 
+         auth_views.LogoutView.as_view(next_page=reverse_lazy('django_career_app:career_home')), 
          name='logout'),
 
     # Password Reset URLs
@@ -32,7 +32,7 @@ urlpatterns = [
              template_name='registration/password_reset_form.html',
              email_template_name='registration/password_reset_email.html', # HTML part of email
              subject_template_name='registration/password_reset_subject.txt',
-             success_url=reverse_lazy('careers:password_reset_done')
+             success_url=reverse_lazy('django_career_app:password_reset_done')
          ), 
          name='password_reset_request'), # Matches link in review_application_details.html & login.html
     path('password_reset/done/', 
@@ -43,7 +43,7 @@ urlpatterns = [
     path('reset/<uidb64>/<token>/', 
          auth_views.PasswordResetConfirmView.as_view(
              template_name='registration/password_reset_confirm.html',
-             success_url=reverse_lazy('careers:password_reset_complete')
+             success_url=reverse_lazy('django_career_app:password_reset_complete')
          ), 
          name='password_reset_confirm'), # Matches link in password_reset_email.html
     path('reset/done/', 

@@ -168,7 +168,7 @@ class LLMUtilsTests(TestCase):
         }
 
 
-    # RFT: @patch('career_portal.careers.llm_utils.litellm.completion')
+    # RFT: @patch('career_portal.django_career_app.llm_utils.litellm.completion')
     # RFT: def test_successful_analysis(self, mock_llm_completion):
     # RFT:     mock_parsed_content = {
     # RFT:         "full_name": "Test User",
@@ -202,7 +202,7 @@ class LLMUtilsTests(TestCase):
     # RFT:     self.assertIsNone(results["parsed_data"].get("error"))
 
 
-    # RFT: @patch('career_portal.careers.llm_utils.litellm.completion')
+    # RFT: @patch('career_portal.django_career_app.llm_utils.litellm.completion')
     # RFT: def test_parsing_fails_scoring_succeeds(self, mock_llm_completion):
     # RFT:     mock_score_content = "75.0"
     # RFT:     mock_llm_completion.side_effect = [
@@ -221,7 +221,7 @@ class LLMUtilsTests(TestCase):
     # RFT:     self.assertTrue("Parsing part" in results.get("error"))
 
 
-    # RFT: @patch('career_portal.careers.llm_utils.litellm.completion')
+    # RFT: @patch('career_portal.django_career_app.llm_utils.litellm.completion')
     # RFT: def test_parsing_succeeds_scoring_fails(self, mock_llm_completion):
     # RFT:     mock_parsed_content = {"full_name": "ParsedTest User", "contact_info": {}, "latest_education": {}, "latest_work_experience": {}, "top_tags": []}
     # RFT:     mock_llm_completion.side_effect = [
@@ -239,7 +239,7 @@ class LLMUtilsTests(TestCase):
     # RFT:     self.assertTrue("Scoring part" in results.get("error"))
 
 
-    # RFT: @patch('career_portal.careers.llm_utils.litellm.completion')
+    # RFT: @patch('career_portal.django_career_app.llm_utils.litellm.completion')
     # RFT: def test_both_llm_calls_fail(self, mock_llm_completion):
     # RFT:     mock_llm_completion.side_effect = [
     # RFT:         Exception("LLM Parsing Error"), 
@@ -255,7 +255,7 @@ class LLMUtilsTests(TestCase):
     # RFT:     self.assertTrue("Both parsing and scoring" in results.get("error_detail"))
 
 
-    # RFT: @patch('career_portal.careers.llm_utils.litellm.completion')
+    # RFT: @patch('career_portal.django_career_app.llm_utils.litellm.completion')
     # RFT: def test_llm_returns_malformed_json_for_parsing(self, mock_llm_completion): # This test implies json-repair fails
     # RFT:     malformed_json_content = "This is not valid JSON { full_name: Test " # Missing closing brace
     # RFT:     mock_score_content = "80.0"
@@ -273,7 +273,7 @@ class LLMUtilsTests(TestCase):
     # RFT:     self.assertTrue("Parsing part" in results.get("error"))
 
 
-    # RFT: @patch('career_portal.careers.llm_utils.litellm.completion')
+    # RFT: @patch('career_portal.django_career_app.llm_utils.litellm.completion')
     # RFT: def test_llm_returns_non_numerical_score(self, mock_llm_completion):
     # RFT:     mock_parsed_content = {"full_name": "ScoreTest User", "contact_info": {}, "latest_education": {}, "latest_work_experience": {}, "top_tags": []}
     # RFT:     non_numerical_score_content = "About seventy five"
@@ -290,7 +290,7 @@ class LLMUtilsTests(TestCase):
     # RFT:     self.assertIsNotNone(results.get("error"))
     # RFT:     self.assertTrue("Scoring part" in results.get("error"))
 
-    # RFT: @patch('career_portal.careers.llm_utils.litellm.completion')
+    # RFT: @patch('career_portal.django_career_app.llm_utils.litellm.completion')
     # RFT: def test_llm_returns_repairable_malformed_json_for_parsing(self, mock_llm_completion):
     # RFT:     """Test that json-repair handles and fixes malformed JSON from the LLM."""
     # RFT:     repairable_malformed_json_string = '{"full_name": "Repair Test", "contact_info": {"email": "repair@example.com"}, "latest_education": {"degree": "PhD",}, "latest_work_experience": {"title": "Repaired Engineer", "company_name": "FixIt Corp",}, "top_tags": ["repaired", "json"],}' # Trailing commas
@@ -335,7 +335,7 @@ class JobDetailViewPostTests(TestCase):
             location="Remote"
         )
         self.client = Client()
-        self.url = reverse('careers:job_detail', args=[self.job_posting.pk])
+        self.url = reverse('django_career_app:job_detail', args=[self.job_posting.pk])
 
         # Common mock LLM response structure
         self.mock_llm_parsed_data_success = {
@@ -367,8 +367,8 @@ class JobDetailViewPostTests(TestCase):
             "error_detail": None
         }
 
-    # RFT: @patch('career_portal.careers.views.get_resume_analysis_with_llm')
-    # RFT: @patch('career_portal.careers.views.extract_text_from_pdf')
+    # RFT: @patch('career_portal.django_career_app.views.get_resume_analysis_with_llm')
+    # RFT: @patch('career_portal.django_career_app.views.extract_text_from_pdf')
     # RFT: def test_successful_application_new_user(self, mock_extract_text, mock_llm_analysis):
     # RFT:     mock_extract_text.return_value = "This is valid resume text."
     # RFT:     mock_llm_analysis.return_value = self.mock_llm_success_return_value
@@ -388,7 +388,7 @@ class JobDetailViewPostTests(TestCase):
     # RFT:     response = self.client.post(self.url, data=form_data, follow=False) 
     # RFT: 
     # RFT:     self.assertEqual(response.status_code, 302) 
-    # RFT:     self.assertEqual(response.url, reverse('careers:review_application'))
+    # RFT:     self.assertEqual(response.url, reverse('django_career_app:review_application'))
     # RFT:     
     # RFT:     mock_extract_text.assert_called_once()
     # RFT:     mock_llm_analysis.assert_called_once()
@@ -414,8 +414,8 @@ class JobDetailViewPostTests(TestCase):
     # RFT:     self.assertEqual(Tag.objects.count(), 0)
 
 
-    # RFT: @patch('career_portal.careers.views.get_resume_analysis_with_llm')
-    # RFT: @patch('career_portal.careers.views.extract_text_from_pdf')
+    # RFT: @patch('career_portal.django_career_app.views.get_resume_analysis_with_llm')
+    # RFT: @patch('career_portal.django_career_app.views.extract_text_from_pdf')
     # RFT: def test_successful_application_existing_user(self, mock_extract_text, mock_llm_analysis):
     # RFT:     existing_user_email = "existing.user@example.com"
     # RFT:     # No User object created here in setup for this test, as JobDetailView doesn't finalize User
@@ -436,7 +436,7 @@ class JobDetailViewPostTests(TestCase):
     # RFT: 
     # RFT:     response = self.client.post(self.url, data=form_data, follow=False)
     # RFT:     self.assertEqual(response.status_code, 302)
-    # RFT:     self.assertEqual(response.url, reverse('careers:review_application'))
+    # RFT:     self.assertEqual(response.url, reverse('django_career_app:review_application'))
     # RFT: 
     # RFT:     self.assertEqual(Applicant.objects.count(), 1) # Temporary applicant
     # RFT:     temp_applicant = Applicant.objects.first()
@@ -450,8 +450,8 @@ class JobDetailViewPostTests(TestCase):
     # RFT:     self.assertEqual(session_data.get('ai_score'), self.mock_llm_score_success)
 
 
-    # RFT: @patch('career_portal.careers.views.get_resume_analysis_with_llm')
-    # RFT: @patch('career_portal.careers.views.extract_text_from_pdf')
+    # RFT: @patch('career_portal.django_career_app.views.get_resume_analysis_with_llm')
+    # RFT: @patch('career_portal.django_career_app.views.extract_text_from_pdf')
     # RFT: def test_pdf_text_extraction_fails(self, mock_extract_text, mock_llm_analysis):
     # RFT:     mock_extract_text.return_value = "" 
     # RFT: 
@@ -464,7 +464,7 @@ class JobDetailViewPostTests(TestCase):
     # RFT: 
     # RFT:     response = self.client.post(self.url, data=form_data, follow=False)
     # RFT:     self.assertEqual(response.status_code, 302)
-    # RFT:     self.assertEqual(response.url, reverse('careers:review_application'))
+    # RFT:     self.assertEqual(response.url, reverse('django_career_app:review_application'))
     # RFT: 
     # RFT:     mock_extract_text.assert_called_once()
     # RFT:     mock_llm_analysis.assert_not_called() 
@@ -479,8 +479,8 @@ class JobDetailViewPostTests(TestCase):
     # RFT:     self.assertEqual(session_data.get('ai_score'), -1.0) # Default error score
 
 
-    # RFT: @patch('career_portal.careers.views.get_resume_analysis_with_llm')
-    # RFT: @patch('career_portal.careers.views.extract_text_from_pdf')
+    # RFT: @patch('career_portal.django_career_app.views.get_resume_analysis_with_llm')
+    # RFT: @patch('career_portal.django_career_app.views.extract_text_from_pdf')
     # RFT: def test_llm_analysis_reports_error(self, mock_extract_text, mock_llm_analysis):
     # RFT:     mock_extract_text.return_value = "Some resume text."
     # RFT:     llm_error_response = {
@@ -500,7 +500,7 @@ class JobDetailViewPostTests(TestCase):
     # RFT:     
     # RFT:     response = self.client.post(self.url, data=form_data, follow=False)
     # RFT:     self.assertEqual(response.status_code, 302)
-    # RFT:     self.assertEqual(response.url, reverse('careers:review_application'))
+    # RFT:     self.assertEqual(response.url, reverse('django_career_app:review_application'))
     # RFT: 
     # RFT:     mock_llm_analysis.assert_called_once()
     # RFT:     self.assertEqual(Applicant.objects.count(), 1) # Temp applicant
@@ -541,8 +541,8 @@ class JobDetailViewPostTests(TestCase):
 class ReviewApplicationViewTests(TestCase):
     def setUp(self):
         self.client = Client()
-        self.review_url = reverse('careers:review_application')
-        self.home_url = reverse('careers:career_home')
+        self.review_url = reverse('django_career_app:review_application')
+        self.home_url = reverse('django_career_app:career_home')
         CompanyProfile.objects.create(description="Global Corp Profile")
 
         self.job_posting = JobPosting.objects.create(title="Test Job", description="Test Job Desc", location="Test Location")
@@ -600,7 +600,7 @@ class ReviewApplicationViewTests(TestCase):
 
         response = self.client.get(self.review_url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'careers/review_application_details.html')
+        self.assertTemplateUsed(response, 'django_career_app/review_application_details.html')
         self.assertIsInstance(response.context['form'], ReviewApplicantForm)
         self.assertTrue(response.context['is_new_user']) # Email "parsed.email@example.com" is new
         form_initial = response.context['form'].initial
@@ -622,7 +622,7 @@ class ReviewApplicationViewTests(TestCase):
         self.assertFalse(response.context['is_new_user']) # Should detect existing user
         self.assertEqual(response.context['form'].initial['email'], self.existing_user.email)
         # Verify "Forgot Password?" link for existing user
-        self.assertContains(response, reverse('careers:password_reset_request'))
+        self.assertContains(response, reverse('django_career_app:password_reset_request'))
         self.assertContains(response, "Forgot Password?")
 
     def test_review_page_redirects_if_no_session_data(self):
@@ -762,7 +762,7 @@ class ReviewApplicationViewTests(TestCase):
     def test_review_submit_missing_session_data(self):
         # No session data set
         response = self.client.post(self.review_url, data={'full_name': 'No Session User'})
-        self.assertRedirects(response, reverse('careers:career_home')) # Corrected redirect
+        self.assertRedirects(response, reverse('django_career_app:career_home')) # Corrected redirect
         # Check for messages if possible, or just the redirect
         # For more robust message checking, you might need to inspect the response of the redirected page.
         # For now, redirect is the primary check.
@@ -792,29 +792,29 @@ class AuthTemplatesTest(TestCase):
         # self.user = User.objects.create_user(username='auth_test_user', email='auth@example.com', password='password')
 
     def test_login_page_uses_custom_template(self):
-        response = self.client.get(reverse('careers:login'))
+        response = self.client.get(reverse('django_career_app:login'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "<h2>Log In</h2>") 
         self.assertContains(response, "Forgot password?") # Check for the link on the login page too
 
     # RFT: def test_password_reset_request_page_uses_custom_template(self):
-    # RFT:     response = self.client.get(reverse('careers:password_reset_request'))
+    # RFT:     response = self.client.get(reverse('django_career_app:password_reset_request'))
     # RFT:     self.assertEqual(response.status_code, 200)
     # RFT:     self.assertContains(response, "<h2>Forgot Your Password?</h2>")
 
     # RFT: def test_password_reset_done_page_uses_custom_template(self):
-    # RFT:     response = self.client.get(reverse('careers:password_reset_done'))
+    # RFT:     response = self.client.get(reverse('django_career_app:password_reset_done'))
     # RFT:     self.assertEqual(response.status_code, 200)
     # RFT:     self.assertContains(response, "<h2>Password Reset Email Sent</h2>")
 
     def test_password_reset_confirm_page_invalid_link_uses_custom_template(self):
         # Test the "invalid link" state of the confirm page
-        response = self.client.get(reverse('careers:password_reset_confirm', args=['invalid_uid', 'invalid_token']))
+        response = self.client.get(reverse('django_career_app:password_reset_confirm', args=['invalid_uid', 'invalid_token']))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "The password reset link was invalid")
 
     # RFT: def test_password_reset_complete_page_uses_custom_template(self):
-    # RFT:     response = self.client.get(reverse('careers:password_reset_complete'))
+    # RFT:     response = self.client.get(reverse('django_career_app:password_reset_complete'))
     # RFT:     self.assertEqual(response.status_code, 200)
     # RFT:     self.assertContains(response, "<h2>Password Reset Complete</h2>")
 
@@ -842,7 +842,7 @@ class AuthTemplatesTest(TestCase):
     # RFT:     initial_user_count = User.objects.count()
     # RFT: 
     # RFT:     response = self.client.post(self.review_url, data=post_data, follow=True)
-    # RFT:     self.assertRedirects(response, reverse('careers:application_thank_you')) # Corrected redirect
+    # RFT:     self.assertRedirects(response, reverse('django_career_app:application_thank_you')) # Corrected redirect
     # RFT:     self.assertEqual(User.objects.count(), initial_user_count) # No new user created
     # RFT: 
     # RFT:     # Since temp_applicant is associated with the user, we might need to re-fetch or check if it's updated
@@ -883,7 +883,7 @@ class AuthTemplatesTest(TestCase):
     # RFT:     }
     # RFT:     
     # RFT:     response = self.client.post(self.review_url, data=post_data, follow=True)
-    # RFT:     self.assertRedirects(response, reverse('careers:application_thank_you')) # Corrected redirect
+    # RFT:     self.assertRedirects(response, reverse('django_career_app:application_thank_you')) # Corrected redirect
     # RFT:     
     # RFT:     self.assertTrue(User.objects.filter(email=new_email_on_review).exists())
     # RFT:     newly_created_user = User.objects.get(email=new_email_on_review)
@@ -917,7 +917,7 @@ class AuthTemplatesTest(TestCase):
     # RFT:     }
     # RFT:     
     # RFT:     response = self.client.post(self.review_url, data=post_data, follow=True)
-    # RFT:     self.assertRedirects(response, reverse('careers:application_thank_you')) # Corrected redirect
+    # RFT:     self.assertRedirects(response, reverse('django_career_app:application_thank_you')) # Corrected redirect
     # RFT:     
     # RFT:     self.assertTrue(User.objects.filter(email=another_new_email).exists())
     # RFT:     newly_created_user = User.objects.get(email=another_new_email)
@@ -1018,9 +1018,9 @@ class AdminViewsTests(TestCase):
         )
         # No application for applicant3 yet, to test candidate list for job with no candidates if needed
 
-        cls.admin_job_list_url = reverse('careers:admin_job_list')
-        cls.admin_candidate_list_url_job1 = reverse('careers:admin_candidate_list', args=[cls.job_posting1.pk])
-        cls.download_resume_url_app1 = reverse('careers:download_resume', args=[cls.applicant1.pk])
+        cls.admin_job_list_url = reverse('django_career_app:admin_job_list')
+        cls.admin_candidate_list_url_job1 = reverse('django_career_app:admin_candidate_list', args=[cls.job_posting1.pk])
+        cls.download_resume_url_app1 = reverse('django_career_app:download_resume', args=[cls.applicant1.pk])
 
     def test_admin_job_list_staff_access(self):
         self.client.login(username="staff_user", password="password")
@@ -1033,7 +1033,7 @@ class AdminViewsTests(TestCase):
     # RFT: def test_admin_job_list_non_staff_access(self):
     # RFT:     self.client.login(username="normal_user", password="password")
     # RFT:     response = self.client.get(self.admin_job_list_url)
-    # RFT:     self.assertRedirects(response, f"{reverse('careers:login')}?next={self.admin_job_list_url}")
+    # RFT:     self.assertRedirects(response, f"{reverse('django_career_app:login')}?next={self.admin_job_list_url}")
 
     def test_admin_candidate_list_staff_access(self):
         self.client.login(username="staff_user", password="password")
@@ -1047,7 +1047,7 @@ class AdminViewsTests(TestCase):
     # RFT: def test_admin_candidate_list_non_staff_access(self):
     # RFT:     self.client.login(username="normal_user", password="password")
     # RFT:     response = self.client.get(self.admin_candidate_list_url_job1)
-    # RFT:     self.assertRedirects(response, f"{reverse('careers:login')}?next={self.admin_candidate_list_url_job1}")
+    # RFT:     self.assertRedirects(response, f"{reverse('django_career_app:login')}?next={self.admin_candidate_list_url_job1}")
 
     def test_admin_candidate_list_ordering_ai_score_desc(self):
         self.client.login(username="staff_user", password="password")
@@ -1076,18 +1076,18 @@ class AdminViewsTests(TestCase):
     # RFT: def test_download_resume_non_staff_access(self):
     # RFT:     self.client.login(username="normal_user", password="password")
     # RFT:     response = self.client.get(self.download_resume_url_app1)
-    # RFT:     self.assertRedirects(response, f"{reverse('careers:login')}?next={self.download_resume_url_app1}")
+    # RFT:     self.assertRedirects(response, f"{reverse('django_career_app:login')}?next={self.download_resume_url_app1}")
 
     def test_download_resume_applicant_no_resume(self):
         self.client.login(username="staff_user", password="password")
         # Applicant2 has no resume_pdf
-        url_no_resume = reverse('careers:download_resume', args=[self.applicant2.pk])
+        url_no_resume = reverse('django_career_app:download_resume', args=[self.applicant2.pk])
         response = self.client.get(url_no_resume)
         self.assertEqual(response.status_code, 404)
 
     def test_download_resume_non_existent_applicant(self):
         self.client.login(username="staff_user", password="password")
-        url_non_existent = reverse('careers:download_resume', args=[9999]) # Assuming 9999 is not a valid PK
+        url_non_existent = reverse('django_career_app:download_resume', args=[9999]) # Assuming 9999 is not a valid PK
         response = self.client.get(url_non_existent)
         self.assertEqual(response.status_code, 404)
 
@@ -1117,7 +1117,7 @@ class MarkdownTemplateTagTests(TestCase):
 # --- UtilsTests (New) ---
 class UtilsTests(TestCase):
     pass
-    # RFT: @patch('career_portal.careers.utils.extract_text_from_pdf')
+    # RFT: @patch('career_portal.django_career_app.utils.extract_text_from_pdf')
     # RFT: def test_convert_pdf_to_markdown_formatting(self, mock_extract_text):
     # RFT:     # Predefined text with various elements
     # RFT:     raw_text_from_pdf = (
@@ -1177,14 +1177,14 @@ class UtilsTests(TestCase):
     # RFT:     self.assertTrue(markdown_output.count("Another paragraph started after blank line.\n\n* List item 1") >= 0 or \
     # RFT:                     markdown_output.count("Another paragraph started after blank line.\n\n\n* List item 1") ==0 ) # Flexible check for newlines
 
-    # RFT: @patch('career_portal.careers.utils.extract_text_from_pdf')
+    # RFT: @patch('career_portal.django_career_app.utils.extract_text_from_pdf')
     # RFT: def test_convert_pdf_to_markdown_empty_text(self, mock_extract_text):
     # RFT:     mock_extract_text.return_value = ""
     # RFT:     dummy_file_obj = BytesIO(b"")
     # RFT:     markdown_output = convert_pdf_to_markdown(dummy_file_obj)
     # RFT:     self.assertEqual(markdown_output, "")
 
-    # RFT: @patch('career_portal.careers.utils.extract_text_from_pdf')
+    # RFT: @patch('career_portal.django_career_app.utils.extract_text_from_pdf')
     # RFT: def test_convert_pdf_to_markdown_extraction_exception(self, mock_extract_text):
     # RFT:     mock_extract_text.side_effect = Exception("PDF Miner Error")
     # RFT:     dummy_file_obj = BytesIO(b"")

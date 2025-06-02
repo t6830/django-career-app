@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('careers', '0002_remove_applicant_resume_pdf_url_applicant_ai_score_and_more'),
+        ('django_career_app', '0002_remove_applicant_resume_pdf_url_applicant_ai_score_and_more'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
@@ -75,13 +75,13 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('ai_score', models.FloatField(blank=True, null=True)),
                 ('application_date', models.DateTimeField(auto_now_add=True)),
-                ('job_posting', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='careers.jobposting')),
+                ('job_posting', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='django_career_app.jobposting')),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
         ),
         migrations.AddField(
             model_name='applicant',
             name='tags',
-            field=models.ManyToManyField(blank=True, to='careers.tag'),
+            field=models.ManyToManyField(blank=True, to='django_career_app.tag'),
         ),
     ]

@@ -26,7 +26,7 @@
         </div>
     {% endif %}
 
-    <form method="post" action="{% url 'careers:review_application' %}" class="mt-4">
+    <form method="post" action="{% url 'django_career_app:review_application' %}" class="mt-4">
         {% csrf_token %}
         {{ form.tags_edit.as_hidden }}
         
@@ -96,7 +96,7 @@
                 <label for="{{ form.password.id_for_label }}">Current Password (to confirm changes):</label>
                 {{ form.password }}
                 {% if form.password.errors %}<div class="invalid-feedback d-block">{{ form.password.errors|join:", " }}</div>{% endif %}
-                <p class="mt-1"><small><a href="{% url 'careers:password_reset_request' %}">Forgot Password?</a></small></p>
+                <p class="mt-1"><small><a href="{% url 'django_career_app:password_reset_request' %}">Forgot Password?</a></small></p>
             </div>
             {# No password_confirmation field for existing user #}
         {% endif %}
@@ -104,7 +104,7 @@
         <!-- job_posting_id is handled in session by the POST view -->
 
         <button type="submit" class="btn btn-primary mt-4">Confirm and Submit Application</button>
-        <a href="{% url 'careers:career_home' %}" class="btn btn-secondary mt-4">Cancel</a>
+        <a href="{% url 'django_career_app:career_home' %}" class="btn btn-secondary mt-4">Cancel</a>
     </form>
 </div>
 {% endblock %}

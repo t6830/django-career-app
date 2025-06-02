@@ -56,7 +56,7 @@
                             N/A
                         {% endif %}
                     </p>
-                    <p><a href="{% url 'careers:download_resume' applicant_id=app.user.applicant.pk %}">Download Resume PDF</a></p>
+                    <p><a href="{% url 'django_career_app:download_resume' applicant_id=app.user.applicant.pk %}">Download Resume PDF</a></p>
                     <button class="view-resume-btn" data-applicant-id="{{ app.user.applicant.pk }}">View Resume</button>
                     
                     <div class="hidden-resume-html" id="resume-html-{{ app.user.applicant.pk }}">

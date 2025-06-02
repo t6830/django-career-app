@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('careers', '0005_applicant_resume_markdown_and_more'),
+        ('django_career_app', '0005_applicant_resume_markdown_and_more'),
     ]
 
     operations = [

@@ -39,7 +39,7 @@ class ReviewApplicationView(View):
     records, logs in new users, cleans up session data, and redirects to the
     careers home page upon successful submission.
     """
-    template_name = 'careers/review_application_details.html'
+    template_name = 'django_career_app/review_application_details.html'
 
     def get(self, request, *args, **kwargs):
         """
@@ -55,7 +55,7 @@ class ReviewApplicationView(View):
 
         if not session_data:
             messages.error(request, "No application data found to review. Please submit an application first.")
-            return redirect(reverse('careers:career_home'))
+            return redirect(reverse('django_career_app:career_home'))
 
         parsed_data = session_data.get('parsed_data', {})
         contact_info = parsed_data.get('contact_info', {})
@@ -134,7 +134,7 @@ class ReviewApplicationView(View):
         session_data = request.session.get('application_review_data')
         if not session_data:
             messages.error(request, "Your session expired or data was not found. Please submit again.")
-            return redirect(reverse('careers:career_home'))
+            return redirect(reverse('django_career_app:career_home'))
 
         temp_applicant_pk = session_data.get('temp_applicant_pk')
         job_posting_id = session_data.get('job_posting_id')
@@ -287,16 +287,16 @@ class ReviewApplicationView(View):
                     del request.session['is_new_user_for_review']
 
                 messages.success(request, "Your application has been successfully submitted!")
-                return redirect(reverse('careers:application_thank_you'))
+                return redirect(reverse('django_career_app:application_thank_you'))
 
             except Applicant.DoesNotExist:
                 logger.error(f"Critical error: Temporary Applicant with pk {temp_applicant_pk} not found during POST. This should not happen if session is consistent.", exc_info=True)
                 messages.error(request, "A critical error occurred with your application data. Please try submitting again.")
-                return redirect(reverse('careers:career_home'))
+                return redirect(reverse('django_career_app:career_home'))
             except JobPosting.DoesNotExist:
                 logger.error(f"JobPosting with pk {job_posting_id} not found during POST.", exc_info=True)
                 messages.error(request, "The job posting you applied for was not found. Please try again or contact support.")
-                return redirect(reverse('careers:career_home'))
+                return redirect(reverse('django_career_app:career_home'))
             except Exception as e: # Catch any other unexpected errors during this block
                 logger.error(f"Unexpected error during final application processing for user {final_email}: {e}", exc_info=True)
                 form.add_error(None, "An unexpected error occurred while finalizing your application. Please try again.")
@@ -315,12 +315,12 @@ class ReviewApplicationView(View):
 
 class CareerHomeView(View):
     """
-    Displays the main careers landing page.
+    Displays the main django_career_app landing page.
 
     Shows general company information (if available) from the CompanyProfile
     model and a list of currently active job postings.
     """
-    template_name = 'careers/career_home.html'
+    template_name = 'django_career_app/career_home.html'
 
     def get(self, request, *args, **kwargs):
         """
@@ -349,7 +349,7 @@ class JobDetailView(View):
     using an LLM, stores all relevant data (form input, LLM results, temporary
     applicant PK) in the session, and then redirects to the application review page.
     """
-    template_name = 'careers/job_detail.html'
+    template_name = 'django_career_app/job_detail.html'
 
     def get(self, request, pk, *args, **kwargs):
         """
@@ -481,7 +481,7 @@ class JobDetailView(View):
             # Redirect to the new review page
             # The 'review_application' URL name is a placeholder and will be defined later.
             logger.info(f"Redirecting temp applicant {applicant.pk} to review page. Session data stored.")
-            return redirect(reverse('careers:review_application'))  # Placeholder URL name
+            return redirect(reverse('django_career_app:review_application'))  # Placeholder URL name
         else:
             logger.warning(f"Applicant form was invalid for job posting {pk}. Errors: {form.errors.as_json()}")
             context = {
@@ -492,12 +492,12 @@ class JobDetailView(View):
 
 
 class ApplicationThankYouView(TemplateView):
-    template_name = 'careers/application_thank_you.html'
+    template_name = 'django_career_app/application_thank_you.html'
 
 
 class AdminJobListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = JobPosting
-    template_name = 'careers/admin_job_list.html' # Will be created in next step
+    template_name = 'django_career_app/admin_job_list.html' # Will be created in next step
     context_object_name = 'job_postings'
     paginate_by = 20 # Optional: add pagination
 
@@ -509,7 +509,7 @@ class AdminJobListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
 
 class AdminCandidateListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = Application
-    template_name = 'careers/admin_candidate_list.html' # Will be created in next step
+    template_name = 'django_career_app/admin_candidate_list.html' # Will be created in next step
     context_object_name = 'applications'
     paginate_by = 15 # Optional: add pagination
 

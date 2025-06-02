@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('careers', '0003_tag_remove_applicant_ai_score_and_more'),
+        ('django_career_app', '0003_tag_remove_applicant_ai_score_and_more'),
     ]
 
     operations = [
