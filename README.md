@@ -25,111 +25,82 @@ A Django-based platform designed to streamline the job application process for b
 
 ## Installation
 
-To get this application up and running, follow these steps:
+Install the `django-career-app` package:
 
-1.  **Clone the repository:**
-    ```bash
-    git clone <repository-url>
-    cd django-career-app
-    ```
-2.  **Create and activate a virtual environment:**
-    ```bash
-    python -m venv venv
-    source venv/bin/activate  # On Windows use `venv\Scripts\activate`
-    ```
-3.  **Configure Environment Variables:**
-    *   This project uses a `.env` file to manage environment-specific settings.
-    *   Copy the example file:
-        ```bash
-        cp .env.example .env
-        ```
-    *   Edit the `.env` file and update the following variables with your specific settings:
-        *   `GEMINI_API_KEY`: Your API key for the Gemini LLM (or other LLM provider if configured).
-        *   `SECRET_KEY`: Your Django secret key. Generate a new one for production.
-        *   `DEBUG`: Set to `True` for development, `False` for production.
-        *   `DATABASE_URL`: (Optional) If you are using a database other than the default SQLite, configure its URL here (e.g., `postgres://user:password@host:port/dbname`).
-    *   **Note:** The `.env` file is included in `.gitignore` and should not be committed to your repository.
+```bash
+pip install django-career-app
+```
 
-4.  **Install dependencies:**
-    This project uses a `requirements.txt` file to manage its dependencies.
-    ```bash
-    pip install -r requirements.txt
-    ```
-    *Note: If `requirements.txt` does not exist, you may need to create it based on the project's imports or Django version.*
+## Settings
 
-4.  **Apply database migrations:**
-    ```bash
-    python manage.py migrate
-    ```
-5.  **Create a superuser (optional, for admin access):**
-    ```bash
-    python manage.py createsuperuser
-    ```
+Add `django_career_app` to your `INSTALLED_APPS` in your project's `settings.py`:
+
+```python
+INSTALLED_APPS = [
+    # ... other apps
+    'django_career_app',
+]
+```
+
+Configure the following settings in your `settings.py`. You can load these credentials using `python-decouple` or `python-dotenv`.
+
+```python
+# Required for LLM features
+GEMINI_API_KEY = "YOUR_GEMINI_API_KEY" # Or load from environment variable
+LLM_MODEL_NAME = "gemini-pro" # Or your preferred LLM model
+
+# Optional: Configure resume storage backend
+# By default, resumes are stored locally.
+# To use AWS S3 for resume storage (requires django-storages):
+STORAGES = {
+    "django_career_app": {
+        "BACKEND": "storages.backends.s3.S3Storage",
+        # Options are typically derived from environment variables
+        # like AWS_STORAGE_BUCKET_NAME, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, etc.
+        # 'OPTIONS': {
+        #     'bucket_name': os.environ.get('AWS_STORAGE_BUCKET_NAME'),
+        #     # etc.
+        # }
+    }
+}
+
+# AWS S3 settings (if using S3Storage)
+AWS_STORAGE_BUCKET_NAME = "your-s3-bucket-name"
+AWS_S3_REGION_NAME = "your-s3-region"
+AWS_S3_FILE_OVERWRITE = False # Set to True if you want to overwrite files with the same name
+
+# AWS credentials (if using S3Storage, load from .env or environment variables)
+# AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
+# AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
+```
 
 ## Usage
 
-Once the installation is complete, you can run the Django development server:
+1.  **Include App URLs:**
+    In your project's main `urls.py` file, include the `django_career_app`'s URL patterns:
 
-```bash
-python manage.py runserver
-```
+    ```python
+    from django.urls import path, include
 
-The application will typically be accessible at `http://127.0.0.1:8000/` in your web browser.
+    urlpatterns = [
+        # ... other project urls
+        path('career-portal/', include('django_career_app.urls')),
+    ]
+    ```
+    Replace `'career-portal/'` with your desired URL prefix.
 
-## Integrating as a Django App
+2.  **Run Database Migrations:**
+    Apply the app's database migrations:
 
-This section details how to integrate the `careers` app into your existing Django project.
+    ```bash
+    python manage.py migrate
+    ```
 
-1.  **Copy App Directory:**
-    -   Copy the `careers` directory (located at `career_portal/careers` in this repository) into your existing Django project. A common location is the root of your project, alongside other apps.
+3.  **Collect Static Files (If applicable):**
+    If the `django_career_app` uses static files (CSS, JavaScript, images) that need to be served by your project, run:
 
-2.  **Add to INSTALLED_APPS:**
-    -   In your existing project's `settings.py` file, add `'careers.apps.CareersConfig'` to the `INSTALLED_APPS` list.
-        ```python
-        INSTALLED_APPS = [
-            # ... other apps
-            'careers.apps.CareersConfig',
-            # ... or 'careers', if you prefer the shorter version
-        ]
-        ```
+    ```bash
+    python manage.py collectstatic
+    ```
+    This will gather all static files into the directory specified by `STATIC_ROOT` in your `settings.py`.
 
-3.  **Include App URLs:**
-    -   In your existing project's main `urls.py` file (usually located in the project's configuration directory), include the `careers` app's URL patterns.
-        ```python
-        from django.urls import path, include
-
-        urlpatterns = [
-            # ... other project urls
-            path('your_desired_path/', include('careers.urls')),
-            # Example: path('career-portal/', include('careers.urls')),
-        ]
-        ```
-    -   Make sure to replace `'your_desired_path/'` with the actual URL prefix you want to use for this app (e.g., `careers/`, `jobs/`, etc.).
-
-4.  **Install Dependencies:**
-    -   This app's dependencies are listed in `requirements.txt`. Compare this file with your existing project's dependencies.
-    -   Install any missing packages, being mindful of potential version conflicts. You might need to adjust versions to ensure compatibility with your project.
-        ```bash
-        pip install -r requirements.txt # Run this if you've copied requirements.txt to your project
-        # Or, install specific packages:
-        # pip install Django==4.2.21 # Example, ensure compatibility
-        # pip install litellm json-repair # Key dependencies for LLM features
-        ```
-    -   Key dependencies for this app include Django, `litellm` for LLM interaction, and `json-repair` for handling LLM responses. Review `requirements.txt` carefully.
-
-5.  **Run Database Migrations:**
-    -   After adding the app and ensuring dependencies are met, run database migrations:
-        ```bash
-        python manage.py makemigrations careers
-        python manage.py migrate
-        ```
-    -   The `makemigrations careers` command might not be necessary initially if you are using the migrations already present in the copied `careers/migrations` folder and no model changes have been made. However, it's good practice if you intend to modify the app's models. `migrate` will apply the app's migrations to your database.
-
-6.  **Collect Static Files (If applicable):**
-    -   If the `careers` app uses static files (CSS, JavaScript, images) that need to be served by your project, run:
-        ```bash
-        python manage.py collectstatic
-        ```
-    - This will gather all static files into the directory specified by `STATIC_ROOT` in your `settings.py`.
-
-*(Note: The "Features (Example)" section from the old README has been removed as it's now replaced by the comprehensive "Features" section above.)*
