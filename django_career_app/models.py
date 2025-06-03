@@ -1,6 +1,13 @@
 from django.db import models
 from django.contrib.auth.models import User
 # from django.db.models import JSONField # Removed as no longer used after removing parsed_resume_raw
+from django.conf import settings
+from django.core.files.storage import storages
+
+def select_storage():
+    if "django_career_app" in settings.STORAGES:
+        return storages["django_career_app"]
+    return storages["default"]
 
 class CompanyProfile(models.Model):
     """
@@ -48,7 +55,7 @@ class Applicant(models.Model):
     email = models.EmailField(unique=True, help_text="Email address of the applicant. Used for communication and potentially account linking.") # Consider if email should be unique here or on User model only
     phone_number = models.CharField(max_length=20, blank=True, null=True, help_text="Contact phone number of the applicant.")
     linkedin_profile = models.URLField(blank=True, null=True, help_text="URL to the applicant's LinkedIn profile.")
-    resume_pdf = models.FileField(upload_to='resumes/', null=True, blank=True, help_text="Stores the applicant's resume file (PDF format preferred).")
+    resume_pdf = models.FileField(upload_to='resumes/', storage=select_storage, null=True, blank=True, help_text="Stores the applicant's resume file (PDF format preferred).")
     resume_markdown = models.TextField(blank=True, null=True, help_text="The applicant's resume content in Markdown format.")
     
     # Fields populated from resume parsing or user input during review

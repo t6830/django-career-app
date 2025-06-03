@@ -2,7 +2,7 @@ import litellm
 import os
 import logging
 import json
-from django.conf import settings
+from decouple import config
 import json_repair
 
 logger = logging.getLogger(__name__)
@@ -23,7 +23,7 @@ def get_resume_analysis_with_llm(resume_text, job_description, job_requirements_
               If LLM call fails or response is malformed, it returns a dummy structure 
               with error information.
     """
-    model = settings.LLM_MODEL_NAME
+    model = config('LLM_MODEL_NAME', default='gemini/gemini-pro')
 
     # --- Default dummy response structure for error cases ---
     # This structure is returned if the LLM call fails, JSON is malformed,
@@ -88,7 +88,7 @@ def get_resume_analysis_with_llm(resume_text, job_description, job_requirements_
         response = litellm.completion(
             model=model,
             messages=messages,
-            api_key=settings.GEMINI_API_KEY,
+            api_key=config('GEMINI_API_KEY', default='your_gemini_api_key_here_if_not_set'),
         )
 
         if response and response.choices and response.choices[0].message and response.choices[0].message.content:
