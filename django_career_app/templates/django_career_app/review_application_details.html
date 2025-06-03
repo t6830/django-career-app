@@ -31,10 +31,15 @@
         {{ form.tags_edit.as_hidden }}
         
         <h4>Personal Information</h4>
-        {{ form.full_name.label_tag }}
-        {{ form.full_name }}
-        {% if form.full_name.errors %}<div class="invalid-feedback d-block">{{ form.full_name.errors }}</div>{% endif %}
-        {% if form.full_name.help_text %}<small class="form-text text-muted">{{ form.full_name.help_text }}</small>{% endif %}
+        {{ form.first_name.label_tag }}
+        {{ form.first_name }}
+        {% if form.first_name.errors %}<div class="invalid-feedback d-block">{{ form.first_name.errors }}</div>{% endif %}
+        {% if form.first_name.help_text %}<small class="form-text text-muted">{{ form.first_name.help_text }}</small>{% endif %}
+
+        {{ form.last_name.label_tag }}
+        {{ form.last_name }}
+        {% if form.last_name.errors %}<div class="invalid-feedback d-block">{{ form.last_name.errors }}</div>{% endif %}
+        {% if form.last_name.help_text %}<small class="form-text text-muted">{{ form.last_name.help_text }}</small>{% endif %}
         
         {{ form.email.label_tag }}
         {{ form.email }}

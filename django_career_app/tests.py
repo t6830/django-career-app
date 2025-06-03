@@ -22,8 +22,8 @@ from .llm_utils import get_resume_analysis_with_llm # Target function
 # --- End New Imports ---
 
 # Helper methods (can be outside a class or in a base test class if preferred)
-def _create_user(username, email='user@example.com', password='password', is_staff=False):
-    user = User.objects.create_user(username=username, email=email, password=password)
+def _create_user(username, email='user@example.com', password='password', is_staff=False, first_name='', last_name=''):
+    user = User.objects.create_user(username=username, email=email, password=password, first_name=first_name, last_name=last_name)
     if is_staff:
         user.is_staff = True
         user.save()
@@ -31,14 +31,14 @@ def _create_user(username, email='user@example.com', password='password', is_sta
 
 class ApplicantModelTests(TestCase):
     def setUp(self):
-        self.user = User.objects.create_user(username='testuser', email='test@example.com', password='password123')
+        self.user = User.objects.create_user(username='testuser', email='test@example.com', password='password123', first_name='Test', last_name='User')
 
     def test_applicant_creation(self):
         """Test basic creation of an Applicant instance."""
         applicant = Applicant.objects.create(
             user=self.user,
-            full_name="John Doe",
-            email="john.doe@example.com",
+            # full_name="John Doe", # Removed
+            # email="john.doe@example.com", # Removed
             phone_number="123-456-7890",
             linkedin_profile="http://linkedin.com/in/johndoe",
             current_title="Software Engineer",
@@ -49,25 +49,29 @@ class ApplicantModelTests(TestCase):
             latest_work_organization="Tech Corp"
         )
         self.assertIsNotNone(applicant.pk)
-        self.assertEqual(applicant.full_name, "John Doe")
+        # self.assertEqual(applicant.full_name, "John Doe") # Removed
         self.assertEqual(applicant.user, self.user)
         self.assertEqual(applicant.latest_work_organization, "Tech Corp")
 
     def test_applicant_str_method(self):
         """Test the __str__ method of the Applicant model."""
+        # Create a user with specific first_name, last_name, and email for this test
+        user_jane = User.objects.create_user(username='janesmith', email='jane.smith@example.com', password='password123', first_name='Jane', last_name='Smith')
         applicant = Applicant.objects.create(
-            user=self.user,
-            full_name="Jane Smith",
-            email="jane.smith@example.com"
+            user=user_jane,
+            # full_name="Jane Smith", # Removed
+            # email="jane.smith@example.com" # Removed
         )
         self.assertEqual(str(applicant), "Jane Smith - jane.smith@example.com")
 
     def test_applicant_tags_relationship(self):
         """Test adding tags to an applicant."""
+        # Create a user for this applicant
+        user_alice = _create_user(username='alicew', email='alice@example.com', password='password123', first_name='Alice', last_name='Wonderland')
         applicant = Applicant.objects.create(
-            user=self.user,
-            full_name="Alice Wonderland",
-            email="alice@example.com"
+            user=user_alice,
+            # full_name="Alice Wonderland", # Removed
+            # email="alice@example.com" # Removed
         )
         tag1 = Tag.objects.create(name="Python")
         tag2 = Tag.objects.create(name="Django")
@@ -162,63 +166,67 @@ class LLMUtilsTests(TestCase):
             settings.LLM_MODEL_NAME = 'gemini/gemini-pro-test'
 
         self.mock_default_parsed_data = {
-            "full_name": "Dummy Candidate",
+            "first_name": "Dummy",
+            "last_name": "Candidate",
             "contact_info": {}, "latest_education": {}, "latest_work_experience": {},
             "top_tags": [], "error": None, "error_detail": None
         }
 
 
-    # RFT: @patch('career_portal.django_career_app.llm_utils.litellm.completion')
-    # RFT: def test_successful_analysis(self, mock_llm_completion):
-    # RFT:     mock_parsed_content = {
-    # RFT:         "full_name": "Test User",
-    # RFT:         "contact_info": {"email": "test@example.com"},
-    # RFT:         "latest_education": {"degree": "BSc"},
-    # RFT:         "latest_work_experience": {"title": "Dev"},
-    # RFT:         "top_tags": ["Python"]
-    # RFT:     }
-    # RFT:     mock_score_content = "90.5"
-    # RFT: 
-    # RFT:     mock_llm_completion.side_effect = [
-    # RFT:         MagicMock(choices=[MagicMock(message=MagicMock(content=json.dumps(mock_parsed_content)))]),
-    # RFT:         MagicMock(choices=[MagicMock(message=MagicMock(content=mock_score_content))])
-    # RFT:     ]
-    # RFT: 
-    # RFT:     results = get_resume_analysis_with_llm(self.resume_text, self.job_description, self.job_requirements)
-    # RFT:     
-    # RFT:     self.assertEqual(mock_llm_completion.call_count, 2)
-    # RFT:     calls = mock_llm_completion.call_args_list
-    # RFT:     self.assertEqual(calls[0][1]['model'], settings.LLM_MODEL_NAME)
-    # RFT:     self.assertTrue(self.resume_text in calls[0][1]['messages'][0]['content'])
-    # RFT:     self.assertEqual(calls[1][1]['model'], settings.LLM_MODEL_NAME)
-    # RFT:     self.assertTrue(self.resume_text in calls[1][1]['messages'][0]['content'])
-    # RFT:     self.assertTrue(self.job_description in calls[1][1]['messages'][0]['content'])
-    # RFT: 
-    # RFT:     self.assertIsNotNone(results.get("parsed_data"))
-    # RFT:     self.assertEqual(results["parsed_data"].get("full_name"), "Test User")
-    # RFT:     self.assertEqual(results.get("ai_score"), 90.5)
-    # RFT:     self.assertIsNone(results.get("error"))
-    # RFT:     self.assertIsNone(results.get("error_detail"))
-    # RFT:     self.assertIsNone(results["parsed_data"].get("error"))
+    @patch('career_portal.django_career_app.llm_utils.litellm.completion')
+    def test_successful_analysis(self, mock_llm_completion):
+        mock_parsed_content = {
+            "first_name": "Test",
+            "last_name": "User",
+            "contact_info": {"email": "test@example.com"},
+            "latest_education": {"degree": "BSc"},
+            "latest_work_experience": {"title": "Dev"},
+            "top_tags": ["Python"]
+        }
+        mock_score_content = "90.5"
+    
+        mock_llm_completion.side_effect = [
+            MagicMock(choices=[MagicMock(message=MagicMock(content=json.dumps(mock_parsed_content)))]),
+            MagicMock(choices=[MagicMock(message=MagicMock(content=mock_score_content))])
+        ]
+    
+        results = get_resume_analysis_with_llm(self.resume_text, self.job_description, self.job_requirements)
+        
+        self.assertEqual(mock_llm_completion.call_count, 2)
+        calls = mock_llm_completion.call_args_list
+        self.assertEqual(calls[0][1]['model'], settings.LLM_MODEL_NAME)
+        self.assertTrue(self.resume_text in calls[0][1]['messages'][0]['content'])
+        self.assertEqual(calls[1][1]['model'], settings.LLM_MODEL_NAME)
+        self.assertTrue(self.resume_text in calls[1][1]['messages'][0]['content'])
+        self.assertTrue(self.job_description in calls[1][1]['messages'][0]['content'])
+    
+        self.assertIsNotNone(results.get("parsed_data"))
+        self.assertEqual(results["parsed_data"].get("first_name"), "Test")
+        self.assertEqual(results["parsed_data"].get("last_name"), "User")
+        self.assertEqual(results.get("ai_score"), 90.5)
+        self.assertIsNone(results.get("error"))
+        self.assertIsNone(results.get("error_detail"))
+        self.assertIsNone(results["parsed_data"].get("error"))
 
 
-    # RFT: @patch('career_portal.django_career_app.llm_utils.litellm.completion')
-    # RFT: def test_parsing_fails_scoring_succeeds(self, mock_llm_completion):
-    # RFT:     mock_score_content = "75.0"
-    # RFT:     mock_llm_completion.side_effect = [
-    # RFT:         Exception("LLM Parsing Error"), 
-    # RFT:         MagicMock(choices=[MagicMock(message=MagicMock(content=mock_score_content))])
-    # RFT:     ]
-    # RFT: 
-    # RFT:     results = get_resume_analysis_with_llm(self.resume_text, self.job_description, self.job_requirements)
-    # RFT: 
-    # RFT:     self.assertEqual(mock_llm_completion.call_count, 2)
-    # RFT:     self.assertIsNotNone(results.get("parsed_data"))
-    # RFT:     self.assertIsNotNone(results["parsed_data"].get("error"))
-    # RFT:     self.assertTrue("LLM call for parsing failed" in results["parsed_data"].get("error"))
-    # RFT:     self.assertEqual(results.get("ai_score"), 75.0)
-    # RFT:     self.assertIsNotNone(results.get("error")) 
-    # RFT:     self.assertTrue("Parsing part" in results.get("error"))
+    @patch('career_portal.django_career_app.llm_utils.litellm.completion')
+    def test_parsing_fails_scoring_succeeds(self, mock_llm_completion):
+        mock_score_content = "75.0"
+        # Mock the combined LLM call to return an error for parsed_data, but a valid score
+        mock_llm_completion.return_value = MagicMock(choices=[MagicMock(message=MagicMock(content=json.dumps({
+            "parsed_data": {"error": "LLM Parsing Error", "error_detail": "Simulated parsing error"},
+            "ai_score": float(mock_score_content),
+            "resume_markdown": "Dummy markdown"
+        })))])
+    
+        results = get_resume_analysis_with_llm(self.resume_text, self.job_description, self.job_requirements)
+    
+        self.assertEqual(mock_llm_completion.call_count, 1) # Only one call now
+        self.assertIsNotNone(results.get("parsed_data"))
+        self.assertIsNotNone(results["parsed_data"].get("error"))
+        self.assertTrue("Simulated parsing error" in results["parsed_data"].get("error_detail"))
+        self.assertEqual(results.get("ai_score"), 75.0)
+        self.assertIsNone(results.get("error")) # Top-level error should be None if score is valid
 
 
     # RFT: @patch('career_portal.django_career_app.llm_utils.litellm.completion')

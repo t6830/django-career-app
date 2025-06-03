@@ -30,7 +30,8 @@ def get_resume_analysis_with_llm(resume_text, job_description, job_requirements_
     # or essential keys are missing from the LLM response.
     dummy_response_template = {
         "parsed_data": {
-            "full_name": "Dummy Candidate",
+            "first_name": "Dummy",
+            "last_name": "Candidate",
             "contact_info": {
                 "email": "candidate_from_resume@example.com",
                 "phone_number": "123-555-0000",
@@ -62,7 +63,8 @@ def get_resume_analysis_with_llm(resume_text, job_description, job_requirements_
         f"Parse the resume, score it against the job description and requirements, and return a single JSON object. "
         f"The JSON object must have three top-level keys: 'parsed_data', 'ai_score', and 'resume_markdown'.\n"
         f"'parsed_data' should be a JSON object containing: "
-        f"'full_name' (string), "
+        f"'first_name' (string), "
+        f"'last_name' (string), "
         f"'contact_info' (dictionary with 'email', 'phone_number', 'linkedin_profile'), "
         f"'latest_education' (dictionary with 'latest_degree', 'school', 'major', 'graduate_year'), "
         f"'latest_work_experience' (dictionary with 'current_title', 'company_name'), and "

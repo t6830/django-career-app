@@ -16,6 +16,9 @@ class CompanyProfile(models.Model):
     """
     description = models.TextField(help_text="A general description of the company. Use Markdown for formatting.")
 
+    def __str__(self):
+        return f"Company Profile (ID: {self.id})"
+
 class JobPosting(models.Model):
     """
     Stores details about a specific job opening offered by the company.
@@ -51,8 +54,6 @@ class Applicant(models.Model):
     This model represents the candidate's overall profile, not a specific application.
     """
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True, help_text="Links to the Django User model for authentication and profile management.")
-    full_name = models.CharField(max_length=255, help_text="Full name of the applicant.")
-    email = models.EmailField(unique=True, help_text="Email address of the applicant. Used for communication and potentially account linking.") # Consider if email should be unique here or on User model only
     phone_number = models.CharField(max_length=20, blank=True, null=True, help_text="Contact phone number of the applicant.")
     linkedin_profile = models.URLField(blank=True, null=True, help_text="URL to the applicant's LinkedIn profile.")
     resume_pdf = models.FileField(upload_to='resumes/', storage=select_storage, null=True, blank=True, help_text="Stores the applicant's resume file (PDF format preferred).")
@@ -76,7 +77,9 @@ class Applicant(models.Model):
     # ai_score = models.FloatField(null=True, blank=True)
 
     def __str__(self):
-        return f"{self.full_name} - {self.email}"
+        if self.user:
+            return f"{self.user.first_name} {self.user.last_name} - {self.user.email}"
+        return f"Applicant Profile (ID: {self.id})"
 
 class Tag(models.Model):
     """

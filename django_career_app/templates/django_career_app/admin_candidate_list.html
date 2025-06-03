@@ -34,7 +34,7 @@
         {% if applications %}
             {% for app in applications %}
                 <div class="candidate-item" id="candidate-{{ app.user.applicant.pk }}">
-                    <h4>{{ app.user.applicant.full_name|default:"N/A" }}</h4>
+                    <h4>{{ app.user.first_name }} {{ app.user.last_name }}</h4>
                     <p><strong>AI Score:</strong> {{ app.ai_score|floatformat:2|default:"N/A" }}</p>
                     <p><strong>Applied on:</strong> {{ app.application_date|date:"Y-m-d H:i" }}</p>
                     <p><strong>Tags:</strong> 

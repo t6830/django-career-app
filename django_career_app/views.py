@@ -64,7 +64,8 @@ class ReviewApplicationView(View):
         
         # Determine initial values, prioritizing parsed data, then form data from session
         initial_data = {
-            'full_name': parsed_data.get('full_name'),
+            'first_name': parsed_data.get('first_name'),
+            'last_name': parsed_data.get('last_name'),
             'email': contact_info.get('email'),
             'phone_number': contact_info.get('phone_number'),
             'linkedin_profile': contact_info.get('linkedin_profile'),
@@ -166,9 +167,16 @@ class ReviewApplicationView(View):
                     return render(request, self.template_name, context)
                 
                 try:
-                    user = User.objects.create_user(username=final_email, email=final_email, password=password)
+                    # Create user with first_name and last_name from cleaned_data
+                    user = User.objects.create_user(
+                        username=final_email, # Using email as username for simplicity
+                        email=final_email,
+                        password=password,
+                        first_name=cleaned_data.get('first_name', ''),
+                        last_name=cleaned_data.get('last_name', '')
+                    )
                     login(request, user) 
-                    logger.info(f"New user created and logged in: {final_email}")
+                    logger.info(f"New user created and logged in: {final_email} ({user.first_name} {user.last_name})")
                 except IntegrityError: 
                     form.add_error('email', 'This email address is already associated with an account. Please log in or use a different email.')
                     context = {'form': form, 'is_new_user': True, 'job_posting_id': job_posting_id, 'ai_score': ai_score} # Pass True for is_new_user as it's an attempt to create new
@@ -208,8 +216,14 @@ class ReviewApplicationView(View):
                     applicant_to_process = existing_applicant_profile
                     
                     # Update fields from form
-                    applicant_to_process.full_name = cleaned_data['full_name']
-                    applicant_to_process.email = final_email # Email on Applicant model might be redundant if User.email is canonical
+                    # Update user's first_name and last_name
+                    user.first_name = cleaned_data.get('first_name', '')
+                    user.last_name = cleaned_data.get('last_name', '')
+                    user.save(update_fields=['first_name', 'last_name'])
+                    
+                    # No full_name or email on Applicant model anymore
+                    # applicant_to_process.full_name = cleaned_data['full_name']
+                    # applicant_to_process.email = final_email 
                     applicant_to_process.phone_number = cleaned_data.get('phone_number')
                     applicant_to_process.linkedin_profile = cleaned_data.get('linkedin_profile')
                     applicant_to_process.current_title = cleaned_data.get('current_title')
@@ -226,7 +240,7 @@ class ReviewApplicationView(View):
                         applicant_to_process.resume_markdown = temp_applicant_with_new_resume.resume_markdown
                     
                     fields_to_update = [
-                        'full_name', 'email', 'phone_number', 'linkedin_profile', 
+                        'phone_number', 'linkedin_profile', 
                         'current_title', 'latest_work_organization', 'latest_degree', 
                         'school', 'major', 'graduate_year'
                     ]
@@ -246,8 +260,9 @@ class ReviewApplicationView(View):
                     applicant_to_process = temp_applicant_with_new_resume
                     
                     # Update fields from form
-                    applicant_to_process.full_name = cleaned_data['full_name']
-                    # applicant_to_process.email = final_email # Already set on temp Applicant or should match User's email
+                    # No full_name or email on Applicant model anymore
+                    # applicant_to_process.full_name = cleaned_data['full_name']
+                    # applicant_to_process.email = final_email 
                     applicant_to_process.phone_number = cleaned_data.get('phone_number')
                     applicant_to_process.linkedin_profile = cleaned_data.get('linkedin_profile')
                     applicant_to_process.current_title = cleaned_data.get('current_title')
@@ -393,8 +408,9 @@ class JobDetailView(View):
             # applicant.job_posting = job_posting # Removed: job_posting is no longer a field on Applicant model
             # Save applicant first to handle file upload with django-storages
             # The resume_pdf field itself is handled by the form.save()
-            applicant.email = f"dummy_{datetime.datetime.now().timestamp()}@example.com" # Temporary email to avoid conflicts
-            # Initial save for file upload
+            # Removed: applicant.email is no longer a field on Applicant model
+            # applicant.email = f"dummy_{datetime.datetime.now().timestamp()}@example.com" 
+            # Initial save for file upload (only for resume_pdf and resume_markdown)
             try:
                 applicant.save() 
             except Exception as e:

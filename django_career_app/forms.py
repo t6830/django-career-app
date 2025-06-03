@@ -48,7 +48,8 @@ class ReviewApplicantForm(forms.Form):
     for password fields, is dynamic based on the `is_new_user` flag passed
     during instantiation.
     """
-    full_name = forms.CharField(max_length=255, required=True, label="Full Name")
+    first_name = forms.CharField(max_length=150, required=True, label="First Name")
+    last_name = forms.CharField(max_length=150, required=True, label="Last Name")
     email = forms.EmailField(required=True, label="Email Address")
     phone_number = forms.CharField(max_length=20, required=False, label="Phone Number")
     linkedin_profile = forms.URLField(required=False, label="LinkedIn Profile URL")
