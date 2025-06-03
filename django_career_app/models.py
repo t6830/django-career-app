@@ -14,10 +14,12 @@ class CompanyProfile(models.Model):
     Stores the company's general description or profile information.
     This is typically a singleton model or used to display 'About Us' type content.
     """
+    name = models.CharField(max_length=255, help_text="The name of the company.")
+    url = models.URLField(blank=True, null=True, help_text="URL to the company's website.")
     description = models.TextField(help_text="A general description of the company. Use Markdown for formatting.")
 
     def __str__(self):
-        return f"Company Profile (ID: {self.id})"
+        return self.name
 
 class JobPosting(models.Model):
     """
@@ -26,10 +28,13 @@ class JobPosting(models.Model):
     """
     title = models.CharField(max_length=255, help_text="The title of the job posting (e.g., Software Engineer).")
     description = models.TextField(help_text="Detailed description of the job, responsibilities, and qualifications. Use Markdown for formatting.")
-    location = models.CharField(max_length=255, help_text="Location of the job (e.g., City, State, Remote).")
+    city = models.CharField(max_length=255, help_text="City of the job location.")
+    state_or_province = models.CharField(max_length=255, blank=True, null=True, help_text="State or province of the job location.")
+    country = models.CharField(max_length=255, blank=True, null=True, help_text="Country of the job location.")
     department = models.CharField(max_length=255, blank=True, null=True, help_text="Department offering the job (e.g., Engineering, Marketing).")
     is_active = models.BooleanField(default=True, help_text="Indicates if the job posting is currently active and accepting applications.")
     date_posted = models.DateTimeField(auto_now_add=True, help_text="Date when the job posting was created.")
+    company_profile = models.ForeignKey(CompanyProfile, on_delete=models.CASCADE, null=True, blank=True, help_text="The company profile associated with this job posting.")
     deadline = models.DateTimeField(blank=True, null=True, help_text="Optional deadline for applications.")
 
     def __str__(self):

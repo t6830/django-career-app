@@ -17,7 +17,7 @@
             {% for job in job_postings %}
                 <li class="job-posting">
                     <h3><a href="{% url 'django_career_app:job_detail' job.pk %}">{{ job.title }}</a></h3>
-                    <p>Location: {{ job.location }}</p>
+                    <p>Location: {{ job.city }}{% if job.state_or_province %}, {{ job.state_or_province }}{% endif %}{% if job.country %}, {{ job.country }}{% endif %}</p>
                     {% if job.department %}
                         <p>Department: {{ job.department }}</p>
                     {% endif %}

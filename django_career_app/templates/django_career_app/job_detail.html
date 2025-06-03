@@ -3,9 +3,35 @@
 
 {% block title %}{{ job_posting.title }} - Career Portal{% endblock %}
 
+{% block extra_head %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org/",
+  "@type": "JobPosting",
+  "title": "{{ job_posting.title }}",
+  "description": "{{ job_posting.description|markdown_to_html|safe }}",
+  "datePosted": "{{ job_posting.date_posted|date:"Y-m-d" }}",
+  "hiringOrganization": {
+    "@type": "Organization",
+    "name": "{{ job_posting.company_profile.name }}",
+    "sameAs": "{{ job_posting.company_profile.url }}"
+  },
+  "jobLocation": {
+    "@type": "Place",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "{{ job_posting.city }}",
+      "addressRegion": "{{ job_posting.state_or_province }}",
+      "addressCountry": "{{ job_posting.country }}"
+    }
+  },
+}
+</script>
+{% endblock %}
+
 {% block content %}
     <h1>{{ job_posting.title }}</h1>
-    <p><strong>Location:</strong> {{ job_posting.location }}</p>
+    <p><strong>Location:</strong> {{ job_posting.city }}{% if job_posting.state_or_province %}, {{ job_posting.state_or_province }}{% endif %}{% if job_posting.country %}, {{ job_posting.country }}{% endif %}</p>
     {% if job_posting.department %}
         <p><strong>Department:</strong> {{ job_posting.department }}</p>
     {% endif %}

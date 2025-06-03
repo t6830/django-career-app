@@ -374,7 +374,7 @@ class JobDetailView(View):
         displays its details along with an empty ApplicantForm for users
         to start an application.
         """
-        job_posting = get_object_or_404(JobPosting, pk=pk)
+        job_posting = get_object_or_404(JobPosting.objects.select_related('company_profile'), pk=pk)
         form = ApplicantForm()
         context = {
             'job_posting': job_posting,

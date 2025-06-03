@@ -6,6 +6,7 @@
     <title>{% block title %}Career Portal{% endblock %}</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'careers/style.css' %}">
+    {% block extra_head %}{% endblock %}
 </head>
 <body>
     <nav>

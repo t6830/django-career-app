@@ -8,8 +8,8 @@ class JobRequirementInline(admin.TabularInline):
 
 # ModelAdmin class for JobPosting
 class JobPostingAdmin(admin.ModelAdmin):
-    list_display = ('title', 'location', 'department', 'is_active', 'date_posted', 'deadline')
-    list_filter = ('is_active', 'department', 'location')
+    list_display = ('title', 'city', 'state_or_province', 'country', 'department', 'is_active', 'date_posted', 'deadline')
+    list_filter = ('is_active', 'department', 'city', 'state_or_province', 'country')
     search_fields = ('title', 'description')
     inlines = [JobRequirementInline]
 
